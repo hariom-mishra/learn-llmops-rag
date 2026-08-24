@@ -1,0 +1,9 @@
+langchain
+langgraph
+langchain_text_splitters
+langchain_openai
+python_dotenv
+langchain_chroma
+chromadb
+langchain_community
+deepeval
