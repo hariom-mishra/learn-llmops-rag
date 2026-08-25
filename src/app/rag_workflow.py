@@ -18,7 +18,7 @@ from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_chroma import Chroma
 
 from langgraph.graph import StateGraph, START, END
-
+from langfuse import get_client
 
 # --------------------------------------------------
 # Environment
@@ -176,20 +176,27 @@ def retriever(state: RAGState) -> dict:
 # --------------------------------------------------
 
 def augmentation(state: RAGState) -> dict:
+    langfuse = get_client()
 
+    system_prompt = langfuse.get_prompt(
+        name="rag_app_system_prompt",
+        type="text",
+        label="latest"
+    )
     prompt = ChatPromptTemplate.from_messages([
         (
             "system",
-            """
-You are a helpful assistant.
+            system_prompt.prompt
+            #             """
+            # You are a helpful assistant.
 
-Answer the user query based only on the given context.
+            # Answer the user query based only on the given context.
 
-If the answer is not available in the context, say:
-"I don't know."
+            # If the answer is not available in the context, say:
+            # "I don't know."
 
-Do not add any preamble to the response.
-"""
+            # Do not add any preamble to the response.
+            # """
         ),
         (
             "human",

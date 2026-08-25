@@ -12,6 +12,8 @@ dependencies = [
     "langchain-community>=0.4.2",
     "langchain-openai>=1.6.0",
     "langchain-text-splitters>=1.1.2",
+    "langfuse>=4.14.5",
     "langgraph>=1.2.11",
     "python-dotenv>=1.2.3",
 ]
+

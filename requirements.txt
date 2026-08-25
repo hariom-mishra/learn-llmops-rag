@@ -7,3 +7,4 @@ langchain_chroma
 chromadb
 langchain_community
 deepeval
+langfuse

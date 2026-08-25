@@ -3,7 +3,9 @@ from deepeval.test_case.llm_test_case import LLMTestCase
 from dotenv import load_dotenv
 from pathlib import Path
 from logging import getLogger, StreamHandler, Formatter, INFO
-from src.app.rag_workflow import graph
+from app.rag_workflow import graph
+from langfuse import get_client
+
 # dataset filenames
 EVALUATION_DATASET_FILENAME = "eval_dataset"
 GOLDEN_DATASET_FILENAME = "golden_dataset"
