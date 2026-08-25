@@ -13,18 +13,18 @@ from deepeval.dataset.dataset import EvaluationDataset
 from deepeval.evaluate.configs import AsyncConfig, DisplayConfig
 from pathlib import Path
 from dotenv import load_dotenv
-from config.parameter_config import params_config
 
-# load the evaluation params
-evaluation_params = params_config.evaluation
-async_params = evaluation_params.async_config
-display_params = evaluation_params.display_config
-evaluation_dataset_params = params_config.evaluation_dataset
-
-# load the api keys
 load_dotenv()
 
-model = evaluation_params.judge_llm
+# hardcoded settings
+JUDGE_LLM = "gpt-4o-mini"
+THROTTLE_VALUE = 5
+MAX_CONCURRENT = 5
+RESULTS_DIR = "results"
+REPORT_DIR = "reports"
+EVALUATION_DATASET_FILENAME = "eval_dataset"
+
+model = JUDGE_LLM
 
 # define the metrics
 recall = ContextualRecallMetric(model=model)
@@ -66,7 +66,7 @@ def evaluate_app():
 
     # define the dataset path
     ROOT_DIR = Path(__file__).resolve().parent.parent.parent.parent
-    DATASET_PATH = (ROOT_DIR / "data" / "evaluation" / "eval_dataset" / evaluation_dataset_params.evaluation_dataset_filename).with_suffix(".json")
+    DATASET_PATH = (ROOT_DIR / "data" / "evaluation" / "eval_dataset" / EVALUATION_DATASET_FILENAME).with_suffix(".json")
 
     if DATASET_PATH.exists():
         # load the dataset
@@ -94,11 +94,11 @@ def evaluate_app():
                         contextual_relevancy,
                         answer_correctness,
                         simple_explanation],
-                async_config=AsyncConfig(throttle_value=async_params.throttle_value,
-                                        max_concurrent=async_params.max_concurrent),
-                display_config=DisplayConfig(results_folder=(ROOT_DIR / "reports" / display_params.results_dir).as_posix(),
+                async_config=AsyncConfig(throttle_value=THROTTLE_VALUE,
+                                        max_concurrent=MAX_CONCURRENT),
+                display_config=DisplayConfig(results_folder=(ROOT_DIR / "reports" / RESULTS_DIR).as_posix(),
                                             file_type="md",
-                                            file_output_dir=(ROOT_DIR / "reports" / display_params.report_dir).as_posix())
+                                            file_output_dir=(ROOT_DIR / "reports" / REPORT_DIR).as_posix())
         )
 
 

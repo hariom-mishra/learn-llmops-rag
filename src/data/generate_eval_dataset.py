@@ -3,12 +3,10 @@ from deepeval.test_case.llm_test_case import LLMTestCase
 from dotenv import load_dotenv
 from pathlib import Path
 from logging import getLogger, StreamHandler, Formatter, INFO
-from app.rag_workflow import graph
-from config.parameter_config import params_config
-
-# load evaluation dataset params
-evaluation_dataset_params = params_config.evaluation_dataset
-golden_dataset_params = params_config.golden_dataset
+from src.app.rag_workflow import graph
+# dataset filenames
+EVALUATION_DATASET_FILENAME = "eval_dataset"
+GOLDEN_DATASET_FILENAME = "golden_dataset"
 
 # load the api keys
 load_dotenv()
@@ -28,7 +26,7 @@ def generate_evaluation_dataset():
     # create paths
     ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 
-    GOLDENS_PATH = (ROOT_DIR / "data" / "evaluation" / "goldens" / golden_dataset_params.golden_dataset_filename).with_suffix(".json")
+    GOLDENS_PATH = (ROOT_DIR / "data" / "evaluation" / "goldens" / GOLDEN_DATASET_FILENAME).with_suffix(".json")
     EVALUATION_DATA_DIR = ROOT_DIR / "data" / "evaluation" / "eval_dataset"
 
     # create dir
@@ -47,7 +45,7 @@ def generate_evaluation_dataset():
             input=golden.input,
             actual_output=final_state.get("response"),
             expected_output=golden.expected_output,
-            retrieval_context=[doc.page_content for doc in final_state.get("retrieved_docs")]
+            retrieval_context=[doc.page_content for doc in final_state.get("retrieved_documents")]
         )
         eval_dataset.add_test_case(test_case=test_case)
         logger.log(level=INFO, msg=f"Added test case no. {count}")
@@ -55,7 +53,7 @@ def generate_evaluation_dataset():
     eval_dataset.save_as(
         file_type="json",
         directory=EVALUATION_DATA_DIR,
-        file_name=evaluation_dataset_params.evaluation_dataset_filename,
+        file_name=EVALUATION_DATASET_FILENAME,
         include_test_cases=True
     )
 

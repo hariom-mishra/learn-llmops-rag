@@ -45,8 +45,10 @@ embedding_model = OpenAIEmbeddings(
 # Paths and constants
 # --------------------------------------------------
 
-DOCUMENTS_PATH = Path("data/processed")
-VECTOR_DB_PATH = Path("saved_embeddings")
+_ROOT_DIR = Path(__file__).resolve().parent.parent.parent
+
+DOCUMENTS_PATH = _ROOT_DIR / "data" / "processed"
+VECTOR_DB_PATH = _ROOT_DIR / "saved_embeddings"
 COLLECTION_NAME = "llmops_demo"
 
 

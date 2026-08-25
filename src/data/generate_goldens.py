@@ -6,8 +6,7 @@ from pathlib import Path
 
 load_dotenv()
 
-ROOT_PATH = Path()
-DATASET_PATH = ROOT_PATH / "datasets"
+ROOT_PATH = Path(__file__).resolve().parent.parent.parent
 DOCS_PATH = ROOT_PATH / "data" / "processed"
 
 # FIXED: Changed argument type to Path or str, and fixed the logic
@@ -69,7 +68,7 @@ else:
     )
 
     # save the goldens
-    GOLDEN_PATH = DATASET_PATH / "goldens"
+    GOLDEN_PATH = ROOT_PATH / "data" / "evaluation" / "goldens"
     GOLDEN_PATH.mkdir(exist_ok=True, parents=True)
 
     synthesizer.save_as(
