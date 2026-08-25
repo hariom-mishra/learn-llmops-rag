@@ -32,7 +32,7 @@ load_dotenv()
 # --------------------------------------------------
 
 llm = ChatOpenAI(
-    model="gpt-5-mini"
+    model="gpt-4o-mini"
 )
 
 embedding_model = OpenAIEmbeddings(
@@ -125,8 +125,8 @@ def initialize_vector_store():
     # ----------------------------------------------
 
     splitter = RecursiveCharacterTextSplitter(
-        chunk_size=500,
-        chunk_overlap=20
+        chunk_size=1000,
+        chunk_overlap=100
     )
 
     docs = splitter.split_documents(loaded_docs)
