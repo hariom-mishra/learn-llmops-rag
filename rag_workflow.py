@@ -151,7 +151,7 @@ def retriever(state: RAGState) -> dict:
     vector_store = get_vector_store()
 
     db_retriever = vector_store.as_retriever(
-        search_kwargs={"k": 3}
+        search_kwargs={"k": 4}
     )
 
     query = state["query"]
