@@ -39,3 +39,5 @@ def get_metrics_from_runs(tag_name: str, experiment_id: str):
         all_metrics.append(metrics_dict)
         
     return all_metrics
+
+
