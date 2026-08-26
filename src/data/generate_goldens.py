@@ -4,6 +4,8 @@ from deepeval.synthesizer.types import Evolution
 from dotenv import load_dotenv
 from pathlib import Path
 
+from src.configs.config import params_config
+
 load_dotenv()
 
 ROOT_PATH = Path(__file__).resolve().parent.parent.parent
@@ -23,32 +25,35 @@ def get_dir_path(provided_path: Path | str) -> list[str]:
 
 # filteration config 
 filtration_config = FiltrationConfig(
-    synthetic_input_quality_threshold=0.6,
-    max_quality_retries=2,
-    critic_model='gpt-5-mini' # Note: Assuming 'gpt-5-min' was a typo for 'mini'
+    synthetic_input_quality_threshold=params_config.golden_dataset.filtration_config.filtration_threshold,
+    max_quality_retries=params_config.golden_dataset.filtration_config.max_retries,
+    critic_model=params_config.golden_dataset.filtration_config.filtration_critic_model
 )
 
 # evolution
+evolutions_dict = {
+    Evolution[k.upper()]: v
+    for k, v in params_config.golden_dataset.evolution_config.evolutions.items()
+}
 evolution_config = EvolutionConfig(
-    evolutions={
-        Evolution.MULTICONTEXT: 0.1,
-        Evolution.CONCRETIZING: 0.3,
-        Evolution.CONSTRAINED: 0.4,
-        Evolution.COMPARATIVE: 0.2
-    },
-    num_evolutions=2
+    evolutions=evolutions_dict,
+    num_evolutions=params_config.golden_dataset.evolution_config.num_evolution
 )
 
 # context - used for generation from document to goldens
+context_cfg = params_config.golden_dataset.constext_construction_config
 context_config = ContextConstructionConfig(
-    critic_model="gpt-5.4-mini",
-    max_contexts_per_document=2,
-    context_quality_threshold=0.7, 
+    critic_model=context_cfg.context_critic_model,
+    max_contexts_per_document=context_cfg.max_contexts_per_document,
+    context_quality_threshold=context_cfg.context_threshold,
+    max_retries=context_cfg.max_context_retries,
+    chunk_size=context_cfg.context_chunk_size,
+    chunk_overlap=context_cfg.context_chunk_overlap
 )
 
 # create the synthesizer
 synthesizer = Synthesizer(
-    model='gpt-5.4-mini',
+    model=params_config.golden_dataset.dataset_model,
     filtration_config=filtration_config,
     evolution_config=evolution_config
 )
@@ -62,7 +67,7 @@ if not document_list:
 else:
     goldens = synthesizer.generate_goldens_from_docs(
         document_paths=document_list,
-        max_goldens_per_context=3,
+        max_goldens_per_context=params_config.golden_dataset.max_golden_per_context,
         include_expected_output=True,
         context_construction_config=context_config
     )
@@ -72,7 +77,7 @@ else:
     GOLDEN_PATH.mkdir(exist_ok=True, parents=True)
 
     synthesizer.save_as(
-        file_name="golden_dataset",
+        file_name=params_config.golden_dataset.golden_dataset_filename,
         file_type="json",
         directory=GOLDEN_PATH.as_posix()
     )

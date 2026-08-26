@@ -3,12 +3,14 @@ from deepeval.test_case.llm_test_case import LLMTestCase
 from dotenv import load_dotenv
 from pathlib import Path
 from logging import getLogger, StreamHandler, Formatter, INFO
-from app.rag_workflow import graph
 from langfuse import get_client
 
+from src.app.rag_workflow import graph
+from src.configs.config import params_config
+
 # dataset filenames
-EVALUATION_DATASET_FILENAME = "eval_dataset"
-GOLDEN_DATASET_FILENAME = "golden_dataset"
+EVALUATION_DATASET_FILENAME = params_config.evaluation_dataset.evaluation_dataset_filename
+GOLDEN_DATASET_FILENAME = params_config.golden_dataset.golden_dataset_filename
 
 # load the api keys
 load_dotenv()

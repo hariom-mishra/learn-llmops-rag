@@ -20,6 +20,8 @@ from langchain_chroma import Chroma
 from langgraph.graph import StateGraph, START, END
 from langfuse import get_client
 
+from src.configs.config import params_config
+
 # --------------------------------------------------
 # Environment
 # --------------------------------------------------
@@ -32,12 +34,12 @@ load_dotenv()
 # --------------------------------------------------
 
 llm = ChatOpenAI(
-    model="gpt-4o-mini"
+    model=params_config.rag_app.llm
 )
 
 embedding_model = OpenAIEmbeddings(
-    model="text-embedding-3-small",
-    dimensions=1024
+    model=params_config.rag_app.embedding_model,
+    dimensions=params_config.rag_app.embedding_dimensions
 )
 
 
@@ -49,7 +51,7 @@ _ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 
 DOCUMENTS_PATH = _ROOT_DIR / "data" / "processed"
 VECTOR_DB_PATH = _ROOT_DIR / "saved_embeddings"
-COLLECTION_NAME = "llmops_demo"
+COLLECTION_NAME = params_config.rag_app.collection_name
 
 
 # --------------------------------------------------
@@ -126,9 +128,10 @@ def initialize_vector_store():
     # Split documents
     # ----------------------------------------------
 
-    splitter = RecursiveCharacterTextSplitter(
-        chunk_size=1000,
-        chunk_overlap=100
+    splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
+        encoding_name=params_config.rag_app.tokenizer_encoding,
+        chunk_size=params_config.rag_app.chunk_size,
+        chunk_overlap=params_config.rag_app.chunk_overlap
     )
 
     docs = splitter.split_documents(loaded_docs)
@@ -153,7 +156,8 @@ def retriever(state: RAGState) -> dict:
     vector_store = get_vector_store()
 
     db_retriever = vector_store.as_retriever(
-        search_kwargs={"k": 4}
+        search_type=params_config.rag_app.search_type,
+        search_kwargs={"k": params_config.rag_app.k}
     )
 
     query = state["query"]
@@ -181,7 +185,7 @@ def augmentation(state: RAGState) -> dict:
     system_prompt = langfuse.get_prompt(
         name="rag_app_system_prompt",
         type="text",
-        label="latest"
+        label=params_config.rag_app.prompt_label
     )
     prompt = ChatPromptTemplate.from_messages([
         (

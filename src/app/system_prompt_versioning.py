@@ -1,13 +1,15 @@
 from langfuse import get_client
 from dotenv import load_dotenv
 
+from src.configs.config import params_config
+
 # load the api keys
 load_dotenv()
 
-chunk_size = 300
-chunk_overlap = 30
-output_dimensions = 1024
-k = 3
+chunk_size = params_config.rag_app.chunk_size
+chunk_overlap = params_config.rag_app.chunk_overlap
+output_dimensions = params_config.rag_app.embedding_dimensions
+k = params_config.rag_app.k
 
 system_prompt = """You are a helpful assistant. Answer the user query
 based on the given context only. If you do not know the answer

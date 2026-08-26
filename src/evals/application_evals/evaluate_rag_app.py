@@ -14,15 +14,17 @@ from deepeval.evaluate.configs import AsyncConfig, DisplayConfig
 from pathlib import Path
 from dotenv import load_dotenv
 
+from src.configs.config import params_config
+
 load_dotenv()
 
-# hardcoded settings
-JUDGE_LLM = "gpt-4o-mini"
-THROTTLE_VALUE = 5
-MAX_CONCURRENT = 5
-RESULTS_DIR = "results"
-REPORT_DIR = "reports"
-EVALUATION_DATASET_FILENAME = "eval_dataset"
+# Settings from config
+JUDGE_LLM = params_config.evaluation.judge_llm
+THROTTLE_VALUE = params_config.evaluation.async_config.throttle_value
+MAX_CONCURRENT = params_config.evaluation.async_config.max_concurrent
+RESULTS_DIR = params_config.evaluation.display_config.result_dir
+REPORT_DIR = params_config.evaluation.display_config.report_dir
+EVALUATION_DATASET_FILENAME = params_config.evaluation_dataset.evaluation_dataset_filename
 
 model = JUDGE_LLM
 

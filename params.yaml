@@ -1,0 +1,44 @@
+rag_app:
+  prompt_label: latest
+  llm: gpt-4o-mini
+  embedding_model: text-embedding-3-small
+  embedding_dimensions: 1024
+  collection_name: llmops_demo
+  chunk_size: 1000
+  chunk_overlap: 100
+  k: 4
+  tokenizer_encoding: o200k_base
+  search_type: similarity
+
+golden_dataset:
+  dataset_model: gpt-5.4-mini
+  max_golden_per_context: 3
+  golden_dataset_filename: golden_dataset
+  filtration_config:
+    filtration_threshold: 0.6
+    max_retries: 2
+    filtration_critic_model: gpt-5-mini
+  evolution_config:
+    num_evolution: 2
+    evolutions: 
+      multicontext: 0.1
+      concretizing: 0.3
+      constrained: 0.4
+      comparative: 0.2
+  constext_construction_config:
+    context_critic_model: gpt-5.4-mini
+    max_contexts_per_document: 1
+    context_threshold: 0.7
+    max_context_retries: 2
+    context_chunk_size: 1000
+    context_chunk_overlap: 100
+evaluation_dataset:
+  evaluation_dataset_filename: evaluation_dataset
+evaluation:
+  judge_llm: gpt-5.4-mini
+  async_config: 
+    throttle_value: 5
+    max_concurrent: 5
+  display_config:
+    result_dir: results
+    report_dir: reports
