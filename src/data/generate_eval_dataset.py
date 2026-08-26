@@ -3,7 +3,6 @@ from deepeval.test_case.llm_test_case import LLMTestCase
 from dotenv import load_dotenv
 from pathlib import Path
 from logging import getLogger, StreamHandler, Formatter, INFO
-from langfuse import get_client
 
 from src.app.rag_workflow import graph
 from src.configs.config import params_config
@@ -36,11 +35,13 @@ def generate_evaluation_dataset():
     # create dir
     EVALUATION_DATA_DIR.mkdir(exist_ok=True, parents=True)
 
-    # dataset to read goldens from
+    # load goldens from their dedicated file
     golden_dataset = EvaluationDataset()
     golden_dataset.add_goldens_from_json_file(file_path=GOLDENS_PATH)
 
-    # dataset to hold produced test cases
+    # build a separate eval dataset that holds ONLY test cases (no goldens)
+    # save_as with include_test_cases=True is safe here because
+    # eval_dataset.goldens is empty — only .test_cases get written
     eval_dataset = EvaluationDataset()
 
     for count, golden in enumerate(golden_dataset.goldens, 1):
@@ -56,7 +57,7 @@ def generate_evaluation_dataset():
 
     eval_dataset.save_as(
         file_type="json",
-        directory=EVALUATION_DATA_DIR,
+        directory=str(EVALUATION_DATA_DIR),
         file_name=EVALUATION_DATASET_FILENAME,
         include_test_cases=True
     )
