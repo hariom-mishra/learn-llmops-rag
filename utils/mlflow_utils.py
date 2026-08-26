@@ -40,4 +40,11 @@ def get_metrics_from_runs(tag_name: str, experiment_id: str):
         
     return all_metrics
 
+def get_metrics_from_stage(stage_name: str, experiment_id: str): 
+    searched_runs = mlflow.search_runs(experiment_ids=[experiment_id],
+                       filter_string=f"tags.stage = '{stage_name}'",
+                       output_format="list")
+    
+    metrics = searched_runs[0].data.metrics
+    return metrics
 
