@@ -70,38 +70,52 @@ def evaluate_app():
     ROOT_DIR = Path(__file__).resolve().parent.parent.parent.parent
     DATASET_PATH = (ROOT_DIR / "data" / "evaluation" / "eval_dataset" / EVALUATION_DATASET_FILENAME).with_suffix(".json")
 
-    if DATASET_PATH.exists():
-        # load the dataset
-        dataset = EvaluationDataset()
-        
-        # load the test cases
-        dataset.add_test_cases_from_json_file(
-            file_path=DATASET_PATH,
-            input_key_name="input",
-            actual_output_key_name="actual_output",
-            expected_output_key_name="expected_output",
-            retrieval_context_key_name="retrieval_context"
+    if not DATASET_PATH.exists():
+        raise FileNotFoundError(f"Evaluation dataset not found at {DATASET_PATH}")
+
+    # ensure result and report directories exist
+    results_folder = ROOT_DIR / "reports" / RESULTS_DIR
+    file_output_dir = ROOT_DIR / "reports" / REPORT_DIR
+    results_folder.mkdir(parents=True, exist_ok=True)
+    file_output_dir.mkdir(parents=True, exist_ok=True)
+
+    # load the dataset
+    dataset = EvaluationDataset()
+    
+    # load the test cases
+    dataset.add_test_cases_from_json_file(
+        file_path=DATASET_PATH,
+        input_key_name="input",
+        actual_output_key_name="actual_output",
+        expected_output_key_name="expected_output",
+        retrieval_context_key_name="retrieval_context"
+    )
+    
+    # store the test cases in a list
+    test_cases = dataset.test_cases
+    
+    # evaluate the dataset
+    return evaluate(
+        test_cases=test_cases,
+        metrics=[
+            recall,
+            precision,
+            answer_relevancy,
+            faithfulness,
+            contextual_relevancy,
+            answer_correctness,
+            simple_explanation
+        ],
+        async_config=AsyncConfig(
+            throttle_value=THROTTLE_VALUE,
+            max_concurrent=MAX_CONCURRENT
+        ),
+        display_config=DisplayConfig(
+            results_folder=results_folder.as_posix(),
+            file_type="md",
+            file_output_dir=file_output_dir.as_posix()
         )
-        
-        # store the test cases in a list
-        test_cases = dataset.test_cases
-        
-        
-        # evaluate the dataset
-        evaluate(test_cases=test_cases,
-                metrics=[recall,
-                        precision,
-                        answer_relevancy,
-                        faithfulness,
-                        contextual_relevancy,
-                        answer_correctness,
-                        simple_explanation],
-                async_config=AsyncConfig(throttle_value=THROTTLE_VALUE,
-                                        max_concurrent=MAX_CONCURRENT),
-                display_config=DisplayConfig(results_folder=(ROOT_DIR / "reports" / RESULTS_DIR).as_posix(),
-                                            file_type="md",
-                                            file_output_dir=(ROOT_DIR / "reports" / REPORT_DIR).as_posix())
-        )
+    )
 
 
 if __name__ == "__main__":
