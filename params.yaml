@@ -4,8 +4,8 @@ rag_app:
   embedding_model: text-embedding-3-small
   embedding_dimensions: 1024
   collection_name: llmops_demo
-  chunk_size: 1000
-  chunk_overlap: 100
+  chunk_size: 280
+  chunk_overlap: 15
   k: 4
   tokenizer_encoding: o200k_base
   search_type: similarity
@@ -30,8 +30,8 @@ golden_dataset:
     max_contexts_per_document: 1
     context_threshold: 0.7
     max_context_retries: 2
-    context_chunk_size: 1000
-    context_chunk_overlap: 100
+    context_chunk_size: 280
+    context_chunk_overlap: 15
 evaluation_dataset:
   evaluation_dataset_filename: eval_dataset
 evaluation:
